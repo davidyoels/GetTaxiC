@@ -2,7 +2,7 @@ package com.example.davidsalmon.gettaxic.model.entities;
 
 public class Travel {
 
-    enum taxi{AVAILABLE,OCCUPIED,FINISHED};
+    public enum taxi{AVAILABLE,OCCUPIED,FINISHED};
     private taxi available;
     private String startLocation;
     private String destinationLocation;

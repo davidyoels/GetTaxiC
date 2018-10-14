@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
                         PhoneNumberError.setText("Phone Number is incorrect");
                         return;
                     }
-                    Intent intent = new Intent(MainActivity.this,AddNewCustomer.class);
+                    Intent intent = new Intent(MainActivity.this,OrderTravel.class);
                     intent.putExtra("phoneNumber", PhoneNumber.getText().toString());
                     startActivity(intent);
                 }

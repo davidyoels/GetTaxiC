@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GetTaxiC</string>
-
     <!-- Strings related to login -->
+    <string name="google_maps_API_key">AIzaSyDPvaCcLaSQEcumCI8yCL-bS71LxnXw5dk</string>
     <string name="prompt_email">Please enter your ID</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in </string>
@@ -49,4 +49,6 @@
     <string name="_1">+1</string>
     <string name="continued">Continue</string>
     <string name="get_started">Get Started</string>
+    <string name="todo">TODO</string>
+    <string name="write_your_destination_here">Write your destination here</string>
 </resources>
