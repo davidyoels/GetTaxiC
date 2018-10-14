@@ -30,6 +30,7 @@
         android:ems="10"
         android:inputType="phone"
         android:maxLength="10"
+        android:textColorHint="@color/cast_expanded_controller_ad_label_background_color"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"

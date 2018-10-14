@@ -51,4 +51,5 @@
     <string name="get_started">Get Started</string>
     <string name="todo">TODO</string>
     <string name="write_your_destination_here">Write your destination here</string>
+    <string name="e_g_start_with_054_052_050">e.g. start with 054,052,050</string>
 </resources>

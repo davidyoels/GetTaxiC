@@ -70,6 +70,10 @@ public class AddNewCustomer extends Activity {
                            if (Long.parseLong(idResult) > 0)
                                 Toast.makeText(getBaseContext(), "insert id: " + idResult, Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(AddNewCustomer.this,OrderTravel.class);
+                            //customerName, String customerPhone, String customerEmail) {
+                            intent.putExtra("customerName", customer.getPrivateName() + customer.getFamilyName());
+                            intent.putExtra("customerPhone", customer.getPhoneNumber());
+                            intent.putExtra("customerEmail", customer.getEmail());
                             startActivity(intent);
                         }
 

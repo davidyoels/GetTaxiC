@@ -1,18 +1,23 @@
 package com.example.davidsalmon.gettaxic.controller;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,6 +31,8 @@ import android.widget.Toast;
 
 import com.example.davidsalmon.gettaxic.Manifest;
 import com.example.davidsalmon.gettaxic.R;
+import com.example.davidsalmon.gettaxic.model.backend.FactoryMethod;
+import com.example.davidsalmon.gettaxic.model.entities.Customer;
 import com.example.davidsalmon.gettaxic.model.entities.Travel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -40,9 +47,12 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.nearby.messages.Distance;
+
 import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -73,12 +83,17 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(new LatLng(-40, -168),
             new LatLng(71, 136));
     String stringCurrentAddress;
+    String customerName, customerPhone, customerEmail;
+    Travel travel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (isServiceOK()) {
             //Toast.makeText(this, "perfect", Toast.LENGTH_SHORT).show();
             setContentView(R.layout.activity_order_travel);
+            getExtras();
             initMap();
             getLocation();
             findViews();
@@ -87,6 +102,11 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
+    private void getExtras() {
+        customerName = getIntent().getStringExtra("customerName");
+        customerPhone = getIntent().getStringExtra("customerPhone");
+        customerEmail = getIntent().getStringExtra("customerEmail");
+    }
     private void findViews() {
         FindCurrentLocation = findViewById(R.id.FindCurrentLocationOrder);
         AddNewTravel = findViewById(R.id.AddNewTravleOrderTemp);
@@ -99,33 +119,104 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public void onClick(View v) {
         if (v == FindCurrentLocation) {
-            locationListener.onLocationChanged(latLngForCurrentLocation);
+            if(locationListener!=null)
+                locationListener.onLocationChanged(latLngForCurrentLocation);
         } else if (v == AddNewTravel) {
             Toast.makeText(this, "for now, this button is useless", Toast.LENGTH_SHORT).show();
         } else if (v == SearchDestinationLocation) {
-            Geocoder geocoder = new Geocoder(getApplicationContext());
-            Address address = new Address(new Locale("hebrew"));
-            try {
-                List<Address> addressList = geocoder.getFromLocationName(AutoCompleteDestination.getText().toString(), 1);
-                address = addressList.get(0);
+            if (latLngForCurrentLocation != null) {
+                Geocoder geocoder = new Geocoder(getApplicationContext());
+                Address address = new Address(new Locale("hebrew"));
+                try {
+                    List<Address> addressList = geocoder.getFromLocationName(AutoCompleteDestination.getText().toString(), 1);
+                    address = addressList.get(0);
 
 
-            }catch (Exception EX){}
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            Location.distanceBetween(latLngForCurrentLocation.getLatitude(), latLngForCurrentLocation.getLongitude()
-                    , address.getLatitude(), address.getLongitude(), new float[]{3});
-            String date = simpleDateFormat.format(calendar.getTime());
-   //public Travel(Travel.taxi.AVAILABLE, stringCurrentAddress, address.getLocality() + address.getCountryName(), date, Time endTravelTime, String customerName, String customerPhone, String customerEmail) {
+                } catch (Exception EX) {
+                }
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                float[] mDistance = new float[5];
+                Location.distanceBetween(latLngForCurrentLocation.getLatitude(), latLngForCurrentLocation.getLongitude()
+                        , address.getLatitude(), address.getLongitude(), mDistance);
+                float Distance = mDistance[0];
+                int a;
+                if (Distance > 10000)
+                    a = 80;
+                else
+                    a = 40;
+                double Duration = (Distance / 1000) / a;
 
-            //Travel newTravel = new Travel(Travel.taxi.AVAILABLE, latLngForCurrentLocation, , , , , , )
-            Toast.makeText(this, "damn", Toast.LENGTH_SHORT).show();
+                String startTravelTime = simpleDateFormat.format(calendar.getTime());
+
+                int hours = (int) Duration;
+                int minutes = (int) ((Duration - hours) * 60);
+
+                calendar.add(Calendar.HOUR, hours);
+                calendar.add(Calendar.MINUTE, minutes);
+
+                String endTravelTime = simpleDateFormat.format(calendar.getTime());
+
+                travel = new Travel(Travel.taxi.AVAILABLE, stringCurrentAddress, address.getLocality() + "," + address.getCountryName(), Duration, startTravelTime, endTravelTime, customerName, customerPhone, customerEmail);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(OrderTravel.this);
+
+                alertDialogBuilder.setTitle("Confirm Invitation");
+                String Duraton = String.valueOf(travel.getDuration());
+                String massege = "Hello "+"<b>"+ customerName +"</b>,<br/><br/>"+
+                        "We want to make sure that the order is right for you,<br/>" +
+                        "please confirm your order.<br/><br/>" +
+                        "Source: "+"<b>" + travel.getStartLocation() + "</b><br/>" +
+                        "Destination: "+"<b>" + travel.getDestinationLocation() + "</b><br/>" +
+                        "Duration: "+"<b>" + (Duraton.subSequence(0, Duraton.indexOf(".") + 2))+ "</b><br/>";
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    alertDialogBuilder.setMessage(Html.fromHtml(massege, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    alertDialogBuilder.setMessage(Html.fromHtml(massege));
+                }
+                alertDialogBuilder.setPositiveButton("Ok", onClickListener);
+                alertDialogBuilder.setNegativeButton("Cancel ", onClickListener);
+
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+            else Toast.makeText(this, "didnt find the current location", Toast.LENGTH_LONG).show();
         }
     }
+    AlertDialog.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
 
+
+        @SuppressLint("StaticFieldLeak")
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+
+            switch (which) {
+                case Dialog.BUTTON_NEGATIVE:
+                    Toast.makeText(OrderTravel.this,"Order travel is canceled", Toast.LENGTH_SHORT).show();
+                    break;
+                case Dialog.BUTTON_POSITIVE:
+                    new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected void onPostExecute(String idResult) {
+                            //super.onPostExecute(idResult);
+                            Toast.makeText(OrderTravel.this,"Travel number: " + idResult + "added" , Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        protected String doInBackground(Void... params) {
+                            FactoryMethod.getManager().addNewTravel(String.valueOf(Travel.Id), travel);
+                            return FactoryMethod.getManager().checkIfTravelAdded(String.valueOf(Travel.Id));
+                        }
+                    }.execute();
+                    break;
+            }
+        };
+    };
     private void initAutoComplete() {
          mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -236,6 +327,5 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, "damn", Toast.LENGTH_SHORT).show();
-        return;
     }
 }

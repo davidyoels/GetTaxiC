@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
 
     private void findViews() {
         PhoneNumber = findViewById(R.id.PhoneNumberMain);
+        PhoneNumber.setText("");
         Continue = findViewById(R.id.ContinueMain);
         PhoneNumberError = findViewById(R.id.PhoneNumberError);
         PhoneNumber.addTextChangedListener(new TextWatcher() {
@@ -48,13 +49,18 @@ public class MainActivity extends Activity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if(v == Continue)
-                {
-                    if(PhoneNumber.getText().toString().length() < 10) {
+                if(v == Continue) {
+                    if (PhoneNumber.getText().toString().length() < 10) {
                         PhoneNumberError.setText("Phone Number is incorrect");
                         return;
                     }
-                    Intent intent = new Intent(MainActivity.this,OrderTravel.class);
+//                    else if ((!PhoneNumber.getText().toString().startsWith("050")) || (!PhoneNumber.getText().toString().startsWith("052"))
+//                            || (!PhoneNumber.getText().toString().startsWith("053")) || (!PhoneNumber.getText().toString().startsWith("054"))
+//                            || (!PhoneNumber.getText().toString().startsWith("055"))) {
+//                        PhoneNumberError.setText("e.g. start with 054,052,050");
+//                        return;
+//                    }
+                    Intent intent = new Intent(MainActivity.this,AddNewCustomer.class);
                     intent.putExtra("phoneNumber", PhoneNumber.getText().toString());
                     startActivity(intent);
                 }

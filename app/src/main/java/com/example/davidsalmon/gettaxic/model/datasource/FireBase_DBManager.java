@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.example.davidsalmon.gettaxic.R;
 import com.example.davidsalmon.gettaxic.model.backend.DB_manager;
 import com.example.davidsalmon.gettaxic.model.entities.Customer;
+import com.example.davidsalmon.gettaxic.model.entities.Travel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,7 +54,28 @@ public class FireBase_DBManager implements DB_manager {
 //    }
 
     @Override
-    public String addNewTravel() {
-      return null;
+    public void addNewTravel(final String Id, final Travel travel) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Travel");
+        DatabaseReference userNameRef = rootRef.child(Id);
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference databaseReference = database.getReference("Travel/" + Id);
+                    databaseReference.setValue(travel);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        userNameRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    @Override
+    public String checkIfTravelAdded(String Id) {
+        String id = FirebaseDatabase.getInstance().getReference("Travel").child(Id).getKey();
+        return id;
     }
 }

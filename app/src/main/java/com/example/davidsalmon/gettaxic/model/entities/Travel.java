@@ -2,25 +2,37 @@ package com.example.davidsalmon.gettaxic.model.entities;
 
 public class Travel {
 
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
     public enum taxi{AVAILABLE,OCCUPIED,FINISHED};
+    public static int Id = 1;
     private taxi available;
     private String startLocation;
     private String destinationLocation;
-    private double startTravelTime;
-    private double endTravelTime;
+    private double duration;
+    private String startTravelTime;
+    private String endTravelTime;
     private String customerName;
     private String customerPhone;
     private String customerEmail;
 
-    public Travel(taxi available, String startLocation, String destinationLocation, double startTravelTime, double endTravelTime, String customerName, String customerPhone, String customerEmail) {
+    public Travel(taxi available, String startLocation, String destinationLocation,double duration, String startTravelTime, String endTravelTime, String customerName, String customerPhone, String customerEmail) {
         this.available = available;
         this.startLocation = startLocation;
         this.destinationLocation = destinationLocation;
+        this.duration = duration;
         this.startTravelTime = startTravelTime;
         this.endTravelTime = endTravelTime;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.customerEmail = customerEmail;
+        Id++;
     }
 
     public taxi getAvailable() {
@@ -47,19 +59,19 @@ public class Travel {
         this.destinationLocation = destinationLocation;
     }
 
-    public double getStartTravelTime() {
+    public String getStartTravelTime() {
         return startTravelTime;
     }
 
-    public void setStartTravelTime(double startTravelTime) {
+    public void setStartTravelTime(String startTravelTime) {
         this.startTravelTime = startTravelTime;
     }
 
-    public double getEndTravelTime() {
+    public String getEndTravelTime() {
         return endTravelTime;
     }
 
-    public void setEndTravelTime(double endTravelTime) {
+    public void setEndTravelTime(String endTravelTime) {
         this.endTravelTime = endTravelTime;
     }
 
