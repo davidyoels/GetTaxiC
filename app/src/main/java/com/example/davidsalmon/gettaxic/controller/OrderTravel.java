@@ -29,7 +29,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.davidsalmon.gettaxic.Manifest;
 import com.example.davidsalmon.gettaxic.R;
 import com.example.davidsalmon.gettaxic.model.backend.FactoryMethod;
 import com.example.davidsalmon.gettaxic.model.entities.Customer;
@@ -86,7 +85,6 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
     String customerName, customerPhone, customerEmail;
     Travel travel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,11 +93,10 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
             setContentView(R.layout.activity_order_travel);
             getExtras();
             initMap();
-            getLocation();
             findViews();
+            getLocation();
             initAutoComplete();
         }
-
     }
 
     private void getExtras() {
@@ -116,7 +113,6 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
 
         FindCurrentLocation.setOnClickListener(this);
         AddNewTravel.setOnClickListener(this);
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -185,7 +181,7 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
-            else Toast.makeText(this, "didnt find the current location", Toast.LENGTH_LONG).show();
+            else Toast.makeText(this, "didn't find the current location", Toast.LENGTH_LONG).show();
         }
     }
     AlertDialog.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
@@ -280,7 +276,6 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
                     ex.printStackTrace();
                 }
             }
-
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -303,9 +298,6 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
         {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
-
-
-
     }
 
     @Override

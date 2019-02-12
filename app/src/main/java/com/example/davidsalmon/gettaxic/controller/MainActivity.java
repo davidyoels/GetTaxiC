@@ -15,6 +15,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.davidsalmon.gettaxic.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends Activity {
 
@@ -22,10 +24,24 @@ public class MainActivity extends Activity {
     Button Continue;
     TextView PhoneNumberError;
     Spinner Prefix;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+        DatabaseReference myRef1 = myRef.child("students");
+        DatabaseReference myRef2 = myRef.child("users/admins");
+        DatabaseReference myRef3 = myRef2.getParent();
+        DatabaseReference myRef4 = myRef2.getRoot();
+        myRef1.setValue("empty");
+        myRef2.setValue("empty2");
+
+        String key = myRef1.getKey();
+        key += "-child";
+        myRef1.child(key).setValue("student message 1");
         findViews();
     }
 
@@ -36,20 +52,24 @@ public class MainActivity extends Activity {
         PhoneNumberError = findViewById(R.id.PhoneNumberError);
         PhoneNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 PhoneNumberError.setText("");
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         Continue.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if(v == Continue) {
+                if (v == Continue) {
                     if (PhoneNumber.getText().toString().length() < 10) {
                         PhoneNumberError.setText("Phone Number is incorrect");
                         return;
@@ -60,7 +80,7 @@ public class MainActivity extends Activity {
 //                        PhoneNumberError.setText("e.g. start with 054,052,050");
 //                        return;
 //                    }
-                    Intent intent = new Intent(MainActivity.this,AddNewCustomer.class);
+                    Intent intent = new Intent(MainActivity.this, AddNewCustomer.class);
                     intent.putExtra("phoneNumber", PhoneNumber.getText().toString());
                     startActivity(intent);
                 }

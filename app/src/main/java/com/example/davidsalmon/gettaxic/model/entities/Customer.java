@@ -8,9 +8,10 @@ public class Customer {
     private String email;
     private String creditCard;
 
-    public Customer(String privateName, String familyName, String phoneNumber, String email, String creditCard) {
+    public Customer(String privateName, String familyName,String Id,String phoneNumber, String email, String creditCard) {
         this.privateName = privateName;
         this.familyName = familyName;
+        this.id = Id;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.creditCard = creditCard;
