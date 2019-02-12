@@ -291,7 +291,7 @@ public class OrderTravel extends FragmentActivity implements OnMapReadyCallback,
 
             }
         };
-        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        if( locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
         {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,locationListener);
         } else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
